@@ -1,4 +1,4 @@
-## Perplexity doesn’t let you properly export everything — so I built this free tool!
+## Perplexity doesn’t let you properly export everything. So I built this free tool!
 
 **Perplex-Codex**:
  - **Automatically gets** your conversations **and the AI generated files** from Perplexity by simulating a human using a browser.
