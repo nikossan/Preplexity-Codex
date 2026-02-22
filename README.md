@@ -1,4 +1,4 @@
-# Preplexity-Codex
+# Preplex-Codex
 
 **Perplex-Codex**  is a tool that does 2 things:
  - **Automatically gets** your conversations **and the AI generated files** from Perplexity by simulating a human using a browser.
