@@ -41,6 +41,10 @@ The setup will launch a web page with the full interface and the following guide
 8. Once you are done, close the server by going to the terminal where you started it and press **Ctrl+C** 2 times. This will also close this page.
 
 
+## Support and discussions 
+
+https://www.reddit.com/r/PerplexCodex/
+
 ### *Note* 
 
 At present, even the native Perplexity tools sometimes fail to export a thread properly and the initial prompt is lost. Or generated files are missing. This happens usually if the prompt and/or the conversation are very long (>100k as markdown file). Therefore, the import might not be 100% perfect. I have tested the import with conversations that were 400k and had dozen of generated files. I downloaded 1000+ conversations multiple times too. But I cannot guarantee it will work always all the time.  In the future, Perplexity might change the way it displays the conversations too. Then an update might be needed, so <a href="https://ko-fi.com/niko256238" target="_blank" class="kofi-link">
