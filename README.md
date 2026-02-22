@@ -3,6 +3,7 @@ Tool to bulk export Perplexity.ai conversations into Markdown files, index, sear
 
 ## Installation 
 1. Downlaod the source as a zip file
+   
    ![zip file](./download-source-small.png)
 3. Create a folder on your PC
 4. Extract the .zip file there
