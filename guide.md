@@ -33,7 +33,7 @@
 
 # *Note* 
 
-At present, even the native Perplexity tools sometimes fail to export a thread properly and the initial prompt is lost. Or generated files are missing. This happens usually if the prompt and/or the conversation are very long (>100k as markdown file). Therefore, the import might not be 100% perfect. I have tested the import with conversations that were 400k and a dozen of generated files but I cannot guarantee it will work always all the time. In the future, Perplexity might change the way it displays the conversations too. Then an update might be needed, so <a href="https://ko-fi.com/niko256238" target="_blank" class="kofi-link">
+At present, even the native Perplexity tools sometimes fail to export a thread properly and the initial prompt is lost. Or generated files are missing. This happens usually if the prompt and/or the conversation are very long (>100k as markdown file). Therefore, the import might not be 100% perfect. I have tested the import with conversations that were 400k and had dozen of generated files. I downloaded 1000+ conversations multiple times too. But I cannot guarantee it will work always all the time. In the future, Perplexity might change the way it displays the conversations too. Then an update might be needed, so <a href="https://ko-fi.com/niko256238" target="_blank" class="kofi-link">
                     ☕ Buy me a cappuccino! It keeps the updates brewing!☕
                 </a>
 
