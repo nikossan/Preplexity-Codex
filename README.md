@@ -8,11 +8,11 @@
 ## Installation 
 1. Downlaod the source as a zip file
    
-   ![zip file](./download-source-small.png)
+   ![Preplexity-Codex-main.zip](./download-source-small.png)
 3. Create a folder on your PC
-4. Extract the .zip file there
-5. If you are using Windows, run `setup.bat` in a terminal (cmd or powershell), in the folder where you extracted the .zip.
-If you are using Linux, run `setup.sh` in a terminal in the directory
+4. Extract the Preplexity-Codex-main.zip file there
+5. If you are using Windows, run `setup.bat` in a terminal (cmd or powershell), in the folder where you extracted Preplexity-Codex-main.zip.
+If you are using Linux, run `setup.sh` in a terminal in the directory.
 
 ## How to use it
 The setup will launch a web page with the full interface and the following guide included:
