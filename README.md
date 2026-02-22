@@ -1,7 +1,7 @@
 ## Perplexity doesn’t let you properly export everything. So I built this free tool!
 
 **Perplex-Codex**:
- - **Automatically gets** your conversations **and the AI generated files** from Perplexity by simulating a human using a browser.
+ - **Automatically gets** your conversations **and the AI generated files** from Perplexity.
  - Index, view and search  your exported conversations. <details><summary>Note</summary>In a way it is even better. The issue is that Perplexity does not load long conversations fully in your web browser. In order to reliably search in such long conversations, you need to scroll down page by page to load it fully.</details>
 
 ## Get **your data** before Perplexity changes something!
