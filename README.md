@@ -1,6 +1,6 @@
 # Preplexity-Codex
 
-**Perplexity Codex**  is a tool that does 2 things:
+**Perplex-Codex**  is a tool that does 2 things:
  - **Automatically gets** your conversations **and the AI generated files** from Perplexity by simulating a human using a browser.
  - Index, view and search  your exported conversations. <details><summary>Note</summary>In a way it is even better. The issue is that Perplexity does not load long conversations fully in your web browser. In order to reliably search in such long conversations, you need to scroll down page by page to load it fully.</details>
 
@@ -9,14 +9,14 @@
    
    ![Preplexity-Codex-main.zip](./download-source-small.png)
 3. Create a folder on your PC
-4. Extract the Preplexity-Codex-main.zip file there
-5. If you are using Windows, run `setup.bat` in a terminal (cmd or powershell), in the folder where you extracted Preplexity-Codex-main.zip.
+4. Extract the Preplex-Codex-main.zip file there
+5. If you are using Windows, run `setup.bat` in a terminal (cmd or powershell), in the folder where you extracted Preplex-Codex-main.zip.
 If you are using Linux, run `setup.sh` in a terminal in the directory.
 
 ## How to use it
 The setup will launch a web page with the full interface and the following guide included:
 
-1.  **Launch**: Run `npm start` in your terminal (cmd or powershell). Do it in the folder/directory where you installed **Perplexity Codex**. This starts the server (http://localhost:3000/viewer.html) and **automatically opens the viewer** in your browser.
+1.  **Launch**: Run `npm start` in your terminal (cmd or powershell). Do it in the folder/directory where you installed **Perplex-Codex**. This starts the server (http://localhost:3000/viewer.html) and **automatically opens the viewer** in your browser.
 
 2.  **⚙️ Settings** - configure before the first run! 
 	- **Login**: Enter your email. This will be used automatically by the auto-browser engine. **This is a must!** The rest you can leave as defaults.
