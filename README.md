@@ -1,4 +1,4 @@
-# Preplex-Codex
+## Perplexity doesn’t let you properly export everything — so I built this!
 
 **Perplex-Codex**  is a tool that does 2 things:
  - **Automatically gets** your conversations **and the AI generated files** from Perplexity by simulating a human using a browser.
