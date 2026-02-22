@@ -1,13 +1,13 @@
 @echo off
 setlocal enabledelayedexpansion
-title Perplexity Codex - Setup
+title Perplex-Codex - Setup
 
 echo.
-echo  #######################################
-echo  #                                     #
-echo  #       Perplexity Codex Setup        #
-echo  #                                     #
-echo  #######################################
+echo  ####################################
+echo  #                                  #
+echo  #       Perplex-Codex Setup        #
+echo  #                                  #
+echo  ####################################
 echo.
 
 :: 1. Check for Node.js

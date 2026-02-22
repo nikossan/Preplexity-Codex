@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Perplexity Codex - Setup Script for Linux/macOS
+# Perplex-Codex - Setup Script for Linux/macOS
 
 echo ""
-echo " #######################################"
-echo " #                                     #"
-echo " #       Perplexity Codex Setup        #"
-echo " #                                     #"
-echo " #######################################"
+echo " ####################################"
+echo " #                                  #"
+echo " #       Perplex-Codex Setup        #"
+echo " #                                  #"
+echo " ####################################"
 echo ""
 
 # 1. Check for Node.js

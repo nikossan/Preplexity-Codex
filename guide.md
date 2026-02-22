@@ -1,11 +1,11 @@
 ## Summary
-**Perplexity Codex**  is a tool that does 2 things:
+**Perplex-Codex**  is a tool that does 2 things:
  - **Automatically gets** your conversations **and the AI generated files** from Perplexity by simulating a human using a browser.
  - Index, view and search your exported conversations. In a way it is even better than Perplexity because for long conversations you cannot search inside reliably unless you scroll page by page to load it in the browser memory.
 
 ## How to use it
 
-1.  **Launch**: Run `npm start` in your terminal (cmd or powershell). Do it in the folder/directory where you installed **Perplexity Codex**. This starts the server (http://localhost:3000/viewer.html) and **automatically opens the viewer** in your browser.
+1.  **Launch**: Run `npm start` in your terminal (cmd or powershell). Do it in the folder/directory where you installed **Perplex-Codex**. This starts the server (http://localhost:3000/viewer.html) and **automatically opens the viewer** in your browser.
 
 2.  **⚙️ Settings** - configure before the first run! 
 	- **Login**: Enter your email. This will be used automatically by the auto-browser engine. **This is a must!** The rest you can leave as defaults.
@@ -40,14 +40,14 @@ At present, even the native Perplexity tools sometimes fail to export a thread p
 
 # *Security concerns?*
 
-All what goes on is contained in your computer. A local web server is created, a auto-browsing engine is evoked, scripts are run to extract **your** data from the Perplexity server. Technically, you can do that by hand. Perplexity Codex just saves you the time and effort. 
+All what goes on is contained in your computer. A local web server is created, a auto-browsing engine is evoked, scripts are run to extract **your** data from the Perplexity server. Technically, you can do that by hand. Perplex-Codex just saves you the time and effort. 
 
 If you want you can go to the **github repository from where you hopefully downloaded** the tool https://github.com/nikssen/Perplexity-Codex/ and check the source code. I personally, find this too much of an effort.  
 
 So just load the .ts files from the src/ folder to an an AI and prompt it "Check this code for malicious activity. Does it send data anywhere? Does it use my data outside my computer? Does it expose anything of private and secure nature to the outside world?" You can do that for free in many AI chatbots.  
 
 # *Troubleshooting*
-- I did my best to test Perplexity Codex. I worked under Windows 10 and I don't have the means and time to try all kind of configurations and operating systems. So bugs *may* exist. 
+- I did my best to test Perplex-Codex. I worked under Windows 10 and I don't have the means and time to try all kind of configurations and operating systems. So bugs *may* exist. 
 - If the browser doesn’t open at all, or opens and closes instantly, try `npx puppeteer browsers install chrome`. 
 - Puppeteer doesn’t like to be ran from a global installation, so perhaps try cloning the project and running it this way. 
 
