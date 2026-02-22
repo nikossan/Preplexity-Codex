@@ -1,0 +1,43 @@
+{
+  "name": "Perplexity-Codex",
+  "version": "0.9.8",
+  "description": "Tool to bulk export Perplexity.ai conversations into Markdown files, index, search, and view them. Includes the AI generated files too!",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "auto-export": "npx ts-node src/auto-export.ts",
+    "manual-export": "npx ts-node src/manual-export.ts",
+    "server": "npx ts-node src/server.ts",
+    "dev": "npx ts-node-dev --respawn src/server.ts",
+    "reindex": "npx ts-node src/reindex.ts",
+    "start": "npm run server"
+  },
+  "keywords": [
+    "perplexity",
+    "export",
+    "markdown",
+    "automation", 
+    "index"	
+  ],
+  "author": "nikossan",
+  "license": "None",
+  "dependencies": {
+    "commander": "^11.0.0",
+    "puppeteer": "^24.9.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "express": "^5.2.1",
+    "cors": "^2.8.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.0",
+    "@types/express": "^5.0.6",
+    "@types/cors": "^2.8.19"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

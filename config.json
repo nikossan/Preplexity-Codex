@@ -1,0 +1,14 @@
+{
+  "email": "name@example.com",
+  "delay_min_ms": 7000,
+  "delay_max_ms": 14000,
+  "batch_size": 10000,
+  "scroll_delay_ms": 3000,
+  "keep_browser_open": true,
+  "debug": false,
+  "browser_inactivity_timeout_minutes": 600,
+  "scan_mode": "full",
+  "scan_top_limit": 10,
+  "output_dir": "./export",
+  "sidebar_width": 400
+}
