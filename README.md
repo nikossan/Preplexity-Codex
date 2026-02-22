@@ -2,8 +2,7 @@
 
 **Perplexity Codex**  is a tool that does 2 things:
  - **Automatically gets** your conversations **and the AI generated files** from Perplexity by simulating a human using a browser.
- - Index, view and [search](## "In a way it is even better than Perplexity because for long conversations you cannot search inside reliably unless you scroll page by page to load it in the browser memory.") your exported conversations.  
-
+ - Index, view and search  your exported conversations. <details><summary>Note</summary>In a way it is even better. The issue is that Perplexity does not load long conversations fully in your web browser. In order to reliably search in such long conversations, you need to scroll down page by page to load it fully.</details>
 
 ## Installation 
 1. Downlaod the source as a zip file
