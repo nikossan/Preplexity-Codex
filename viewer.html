@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perplexity Codex — Auto Export & Explorer</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --bg: #0b0f1a;
+            --surface: #151b2b;
+            --surface-hover: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #38bdf8;
+            --primary-hover: #7dd3fc;
+            --border: #1e293b;
+            --accent: #f472b6;
+            --selection: rgba(56, 189, 248, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        #sidebar {
+            width: 400px;
+            min-width: 250px;
+            max-width: 80%;
+            background-color: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        #divider {
+            width: 8px;
+            cursor: col-resize;
+            background-color: var(--border);
+            transition: background-color 0.2s;
+            z-index: 20;
+        }
+
+        #divider:hover,
+        #divider.resizing {
+            background-color: var(--primary);
+        }
+
+        #sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(to bottom, #1e293b, #0f172a);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .search-container {
+            margin-top: 16px;
+            position: relative;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        select {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 8px;
+            outline: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        select:focus {
+            border-color: var(--primary);
+        }
+
+        #results {
+            flex: 1;
+            overflow-y: auto;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-item {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .result-item:hover {
+            background-color: var(--surface-hover);
+        }
+
+        .result-item.active {
+            background-color: #334155;
+            border-left: 4px solid var(--primary);
+        }
+
+        .title {
+            font-weight: 700;
+            color: #f1f5f9;
+            font-size: 1.05rem;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .snippet {
+            font-size: 0.85rem;
+            color: #6ee7b7;
+            /* Emerald green from previous version */
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .date-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 4px;
+            font-size: 0.8rem;
+        }
+
+        .date {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .time {
+            color: #6ee7b7;
+            font-weight: 500;
+            /* Less bold as requested */
+        }
+
+        #sidebar-footer {
+            padding: 16px 24px;
+            font-size: 0.85rem;
+        }
+
+        .kofi-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 12px;
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .kofi-link:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Main Content */
+        #main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        #top-toolbar {
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #0f172a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+
+        .btn-accent:hover {
+            opacity: 0.9;
+        }
+
+        #viewer-container {
+            flex: 1;
+            padding: 32px;
+            background-color: #eee8d5;
+            /* Solarized Light background */
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .markdown-body {
+            color: #1e293b;
+            /* Dark text for light background */
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .markdown-body h1,
+        .markdown-body h2,
+        .markdown-body h3 {
+            color: #0f172a;
+            /* Dark headers */
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .markdown-body a {
+            color: #2563eb;
+            /* High contrast blue for links */
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .markdown-body a:hover {
+            color: #1d4ed8;
+        }
+
+        .markdown-body p {
+            margin-bottom: 1.2rem;
+        }
+
+        .markdown-body code {
+            background: rgba(30, 41, 59, 0.08);
+            /* Sophisticated dark-blue tint */
+            color: #1e293b;
+            /* Dark high-contrast text */
+            padding: 3px 6px;
+            border-radius: 5px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+            border: 1px solid rgba(30, 41, 59, 0.1);
+        }
+
+        .markdown-body pre {
+            background: #0d1117;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid #30363d;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .markdown-body pre code {
+            background: transparent !important;
+            color: #e6edf3 !important;
+            padding: 0;
+            border-radius: 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        .markdown-body blockquote {
+            border-left: 4px solid var(--primary);
+            margin: 1.5rem 0;
+            padding: 8px 20px;
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        /* Callout Styles */
+        .callout {
+            border-left: 4px solid var(--primary);
+            background: #f0f9ff;
+            padding: 16px;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+            color: #0c4a6e;
+        }
+
+        .callout-title {
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            color: #0369a1;
+        }
+
+        /* Table Styles */
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            /* Visible grey border */
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .markdown-body th {
+            background: #f1f5f9;
+            color: #0f172a;
+            font-weight: 700;
+            text-align: left;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .markdown-body td {
+            padding: 10px 16px;
+            border: 1px solid #e5e7eb;
+            color: #334155;
+        }
+
+        .markdown-body tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .markdown-body hr {
+            border: 0;
+            border-top: 1px solid #e2e8f0;
+            margin: 2rem 0;
+        }
+
+        #current-title {
+            color: #0f172a;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 800;
+            opacity: 0.8;
+        }
+
+        .markdown-body img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        #welcome-msg {
+            max-width: 800px;
+            /* Same as markdown-body for consistency */
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #instructions {
+            width: 100%;
+            text-align: left;
+        }
+
+        #instructions h1,
+        #instructions h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Config Overlay */
+        #config-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        #config-modal {
+            background: var(--surface);
+            padding: 32px;
+            border-radius: 16px;
+            width: 500px;
+            border: 1px solid var(--border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 6px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Instructions box - Centered under welcome */
+        #instructions {
+            width: 100%;
+            max-width: 500px;
+            background: var(--surface);
+            padding: 24px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            color: var(--text);
+            text-align: left;
+            margin-top: 32px;
+        }
+
+        /* Enhanced Progress UI */
+        #progress-container {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            margin-left: 12px;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 6px 16px;
+            border-radius: 30px;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        #progress-container.archive {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(244, 114, 182, 0.3);
+        }
+
+        .pulse {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: scale(0.98);
+            }
+        }
+
+        .spinner-container {
+            position: relative;
+            width: 20px;
+            height: 20px;
+        }
+
+        .spinner-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .spinner-active {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .archive .spinner-active {
+            border-top-color: var(--accent);
+        }
+
+        #progress-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 800;
+            display: block;
+            margin-bottom: -2px;
+        }
+
+        #progress-text {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text);
+            font-family: monospace;
+        }
+
+        #progress-msg {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .welcome-content {
+            flex: 1;
+            text-align: center;
+            padding-top: 60px;
+        }
+
+        .welcome-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+        }
+
+        .welcome-content p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebar">
+        <div id="sidebar-header">
+            <h1>Perplexity Codex</h1>
+            <div class="search-container" style="display: flex; gap: 8px;">
+                <input type="text" id="searchInput" placeholder="Search..." style="flex: 1;">
+                <select id="sortOrder">
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
+                </select>
+            </div>
+        </div>
+        <div id="results">
+            <!-- Results injected here -->
+        </div>
+        <div id="sidebar-footer">
+            <div style="font-size: 0.75rem; color: var(--text-muted);">
+                Auto Export Tool v2.0
+            </div>
+        </div>
+    </div>
+
+    <div id="divider"></div>
+
+    <div id="main">
+        <div id="top-toolbar">
+            <div class="toolbar-group">
+                <button id="import-btn" class="btn" onclick="triggerExport()">🚀 Start Auto Import</button>
+                <button class="btn btn-outline" onclick="triggerReindex()">🧠 Re-index Library</button>
+                <button class="btn btn-outline" onclick="showGuide()">📖 Guide</button>
+                <button class="btn btn-outline" onclick="showConfig()">⚙️ Settings</button>
+            </div>
+            <div class="toolbar-group">
+                <div id="progress-container" class="pulse">
+                    <div class="spinner-container">
+                        <div class="spinner-bg"></div>
+                        <div class="spinner-active"></div>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span id="progress-label">Status</span>
+                        <div style="display: flex; align-items: baseline; gap: 8px;">
+                            <span id="progress-text">0/0</span>
+                            <span id="progress-msg">Waiting...</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="status-msg" style="font-size: 0.85rem; color: var(--primary);"></div>
+                <a href="https://ko-fi.com/niko256238" target="_blank" class="kofi-link">
+                    ☕ Did I save you time? Buy me a cappuccino! ☕
+                </a>
+            </div>
+        </div>
+
+        <style>
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+
+        <div id="viewer-container">
+            <div id="welcome-msg" style="display:none"></div>
+
+            <div id="view-area" style="display: none; height: 100%; flex: 1; flex-direction: column;">
+                <div
+                    style="display:flex; justify-content:space-between; align-items: center; margin-bottom:24px; padding-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                    <h2 id="current-title" style="margin:0">Conversation</h2>
+                    <div id="action-btns">
+                        <a id="open-md" class="btn btn-outline" target="_blank">View MD</a>
+                        <a id="open-online" class="btn btn-outline" target="_blank" style="margin-left:8px">Open
+                            Online</a>
+                    </div>
+                </div>
+                <div id="viewer-content" class="markdown-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="config-overlay">
+        <div id="config-modal">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="btn btn-outline" style="padding:4px 8px" onclick="hideConfig()">✕</button>
+            </div>
+            <div class="form-group">
+                <label>Login Email</label>
+                <input type="text" id="cfg-email">
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="cfg-keep-open" style="width: auto; margin:0">
+                    <label style="margin: 0;">Keep Browser Open</label>
+                </div>
+                <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="cfg-debug" style="width: auto; margin:0">
+                    <label style="margin: 0;">Debug Mode</label>
+                </div>
+                <div class="form-group">
+                    <label>Inactivity Timeout (min)</label>
+                    <input type="number" id="cfg-timeout" placeholder="60">
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="form-group">
+                    <label>Min Delay (ms)</label>
+                    <input type="number" id="cfg-delay-min">
+                </div>
+                <div class="form-group">
+                    <label>Max Delay (ms)</label>
+                    <input type="number" id="cfg-delay-max">
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="form-group">
+                    <label>Batch Size</label>
+                    <input type="number" id="cfg-batch">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Scroll Delay (ms) while browsing the Library</label>
+                <input type="number" id="cfg-scroll-delay" placeholder="3000">
+            </div>
+            <div class="form-group"
+                style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px;">
+                <label
+                    style="font-weight: 800; color: var(--primary); margin-bottom: 12px; display: block; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em;">Library
+                    Scan Optimization</label>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="radio" name="scan-mode" id="scan-full" value="full"
+                            style="width: auto; margin: 0;">
+                        <label for="scan-full" style="margin: 0; cursor: pointer;">Full Scan (Deep - finds everything
+                            but slower)</label>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="radio" name="scan-mode" id="scan-top" value="top" style="width: auto; margin: 0;">
+                        <label for="scan-top" style="margin: 0; cursor: pointer;">Scan Top Threads Only (Fast - default
+                            is 10)</label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="scan-limit-group" class="form-group" style="margin-top: 12px;">
+                <label>Threads to scan</label>
+                <input type="number" id="cfg-scan-limit" placeholder="10">
+            </div>
+
+            <div style="margin-top:24px; display:flex; gap:12px;">
+                <button class="btn" onclick="saveConfig()" style="flex:1">Save Configuration</button>
+                <button class="btn btn-outline" onclick="hideConfig()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let indexData = [];
+        const API_BASE = 'http://localhost:3000/api';
+
+        async function init() {
+            // Load index
+            try {
+                const response = await fetch(`${API_BASE}/index`);
+                indexData = await response.json();
+                applyFilters(); // Apply default sorting/filtering
+            } catch (e) {
+                console.error("Index not found", e);
+            }
+
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('sortOrder').addEventListener('change', applyFilters);
+
+            loadConfigFields();
+
+            // Check for ongoing export on load
+            pollStatus();
+
+            // Set up resize logic
+            setupResizer();
+
+            // Launch guide by default
+            showGuide();
+        }
+
+        function applyFilters() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const sortOrder = document.getElementById('sortOrder').value;
+
+            let filtered = indexData.filter(item =>
+                item.title.toLowerCase().includes(term) ||
+                item.snippet.toLowerCase().includes(term) ||
+                (item.content && item.content.toLowerCase().includes(term))
+            );
+
+            // Sort by date
+            filtered.sort((a, b) => {
+                const dateA = new Date(a.date).getTime();
+                const dateB = new Date(b.date).getTime();
+                return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+            });
+
+            renderResults(filtered);
+        }
+
+        function setupResizer() {
+            const sidebar = document.getElementById('sidebar');
+            const divider = document.getElementById('divider');
+            let isResizing = false;
+
+            divider.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                document.body.style.cursor = 'col-resize';
+                divider.classList.add('resizing');
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+                const newWidth = e.clientX;
+                if (newWidth > 200 && newWidth < window.innerWidth * 0.8) {
+                    sidebar.style.width = `${newWidth}px`;
+                }
+            });
+
+            document.addEventListener('mouseup', async () => {
+                if (!isResizing) return;
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                divider.classList.remove('resizing');
+
+                // Save sidebar width
+                const currentCfg = await (await fetch(`${API_BASE}/config`)).json();
+                currentCfg.sidebar_width = parseInt(sidebar.style.width);
+                await fetch(`${API_BASE}/config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(currentCfg)
+                });
+            });
+        }
+
+        let pollInterval = null;
+
+        async function pollStatus() {
+            try {
+                const res = await fetch(`${API_BASE}/status`);
+                const status = await res.json();
+
+                const container = document.getElementById('progress-container');
+                const text = document.getElementById('progress-text');
+                const msg = document.getElementById('progress-msg');
+                const label = document.getElementById('progress-label');
+                const importBtn = document.getElementById('import-btn');
+
+                if (status.active && status.type !== 'archive') {
+                    container.style.display = 'flex';
+                    if (importBtn) {
+                        importBtn.style.visibility = 'hidden';
+                        importBtn.style.pointerEvents = 'none';
+                    }
+                    container.classList.remove('archive');
+                    label.textContent = status.phase ? status.phase.toUpperCase() : "Importing";
+
+                    if (status.phase === 'initializing') {
+                        text.style.display = 'none';
+                    } else if (status.phase === 'scanning') {
+                        text.style.display = 'block';
+                        text.textContent = `${status.current} Discovered`;
+                    } else if (status.phase === 'downloading') {
+                        text.style.display = 'block';
+                        text.textContent = `${status.current}/${status.total}`;
+                    } else {
+                        text.style.display = 'block';
+                        text.textContent = `${status.current}/${status.total}`;
+                    }
+
+                    msg.textContent = status.message || "Working...";
+
+                    if (!pollInterval) {
+                        pollInterval = setInterval(pollStatus, 2000);
+                    }
+                } else {
+                    if (status.total > 0 && status.current === status.total) {
+                        label.textContent = "Complete";
+                        text.style.display = 'block';
+                        text.textContent = "100%";
+                        msg.textContent = status.message || "Finished!";
+                        setTimeout(() => {
+                            container.style.display = 'none';
+                            if (importBtn) {
+                                importBtn.style.visibility = 'visible';
+                                importBtn.style.pointerEvents = 'auto';
+                            }
+                        }, 3000);
+                    } else {
+                        container.style.display = 'none';
+                        if (importBtn) {
+                            importBtn.style.visibility = 'visible';
+                            importBtn.style.pointerEvents = 'auto';
+                        }
+                    }
+                    if (pollInterval) {
+                        clearInterval(pollInterval);
+                        pollInterval = null;
+                        init();
+                    }
+                }
+            } catch (e) {
+                console.error("Poll failed", e);
+            }
+        }
+
+        function renderResults(data) {
+            const container = document.getElementById('results');
+            container.innerHTML = '';
+
+            data.forEach(item => {
+                const dateObj = new Date(item.date);
+                const dateStr = dateObj.toLocaleDateString(undefined, { dateStyle: 'short' });
+                const timeStr = dateObj.toLocaleTimeString(undefined, { timeStyle: 'short' });
+
+                const div = document.createElement('div');
+                div.className = 'result-item';
+                div.innerHTML = `
+                    <div class="title">${item.title}</div>
+                    <div class="snippet">${item.snippet || ""}</div>
+                    <div class="date-row">
+                        <span class="date">${dateStr}</span>
+                        <span class="time">${timeStr}</span>
+                    </div>
+                `;
+                div.onclick = () => selectItem(item, div);
+                container.appendChild(div);
+            });
+        }
+
+        async function selectItem(item, element) {
+            document.querySelectorAll('.result-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            document.getElementById('welcome-msg').style.display = 'none';
+            document.getElementById('view-area').style.display = 'flex';
+            document.getElementById('action-btns').style.display = 'block';
+
+            document.getElementById('current-title').textContent = item.title;
+            document.getElementById('open-md').href = item.filename;
+            document.getElementById('open-online').href = item.url;
+
+            const contentArea = document.getElementById('viewer-content');
+            contentArea.innerHTML = '<div style="color: var(--text-muted)">Loading...</div>';
+
+            try {
+                // Prepend ./ to ensure relative fetch if filename is just the basename
+                const url = item.filename.startsWith('http') ? item.filename : `./${item.filename}`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`File not found: ${item.filename}`);
+                let text = await res.text();
+
+                // Strip Frontmatter
+                if (text.startsWith('---')) {
+                    const secondSep = text.indexOf('---', 3);
+                    if (secondSep !== -1) {
+                        text = text.substring(secondSep + 3).trim();
+                    }
+                }
+
+                // Handle basic Obsidian callouts [!type] or [!type] Title
+                // Multi-line support: find >[!type] and then capture subsequent > lines
+                text = text.replace(/^>\[!(.*?)\](.*?)\n((?:^>.*?\n)*)/gm, (match, type, title, lines) => {
+                    const cleanTitle = title.trim() || type.toUpperCase();
+                    const cleanLines = lines.replace(/^>/gm, '').trim();
+                    return `<div class="callout"><div class="callout-title">${cleanTitle}</div>${cleanLines}</div>\n\n`;
+                });
+
+                // Single line callouts fallback
+                text = text.replace(/^>\[!(.*?)\](.*?)$/gm, (match, type, title) => {
+                    const cleanTitle = title.trim() || type.toUpperCase();
+                    return `<div class="callout"><div class="callout-title">${cleanTitle}</div></div>\n\n`;
+                });
+
+                // Strip block IDs [[#^...]]
+                text = text.replace(/\[\[#\^.*?\]\]/g, '');
+
+                contentArea.innerHTML = marked.parse(text);
+
+                // Trigger syntax highlighting
+                contentArea.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightElement(block);
+                });
+
+                // Ensure links open in new tab
+                contentArea.querySelectorAll('a').forEach(a => a.target = "_blank");
+
+                // Scroll to top
+                document.getElementById('viewer-container').scrollTo(0, 0);
+            } catch (e) {
+                contentArea.innerHTML = `<div style="color: #ef4444; padding: 20px;">Error loading file: ${e.message}<br><small>Check if the file exists in your export directory.</small></div>`;
+            }
+        }
+
+        async function loadConfigFields() {
+            const res = await fetch(`${API_BASE}/config`);
+            const cfg = await res.json();
+            document.getElementById('cfg-email').value = cfg.email;
+            document.getElementById('cfg-delay-min').value = cfg.delay_min_ms;
+            document.getElementById('cfg-delay-max').value = cfg.delay_max_ms;
+            document.getElementById('cfg-batch').value = cfg.batch_size;
+            document.getElementById('cfg-scroll-delay').value = cfg.scroll_delay_ms || 3000;
+            document.getElementById('cfg-keep-open').checked = cfg.keep_browser_open ?? false;
+            document.getElementById('cfg-debug').checked = cfg.debug ?? false;
+            document.getElementById('cfg-timeout').value = cfg.browser_inactivity_timeout_minutes || 60;
+
+            const scanMode = cfg.scan_mode || 'full';
+            document.getElementById('scan-full').checked = (scanMode === 'full');
+            document.getElementById('scan-top').checked = (scanMode === 'top');
+            document.getElementById('cfg-scan-limit').value = cfg.scan_top_limit || 10;
+
+            // Toggle visibility of limit input
+            const limitGroup = document.getElementById('scan-limit-group');
+            limitGroup.style.opacity = scanMode === 'top' ? '1' : '0.5';
+
+            document.getElementsByName('scan-mode').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    limitGroup.style.opacity = e.target.value === 'top' ? '1' : '0.5';
+                });
+            });
+
+            if (cfg.sidebar_width) {
+                document.getElementById('sidebar').style.width = `${cfg.sidebar_width}px`;
+            }
+        }
+
+        async function saveConfig() {
+            const cfg = {
+                email: document.getElementById('cfg-email').value,
+                delay_min_ms: parseInt(document.getElementById('cfg-delay-min').value),
+                delay_max_ms: parseInt(document.getElementById('cfg-delay-max').value),
+                batch_size: parseInt(document.getElementById('cfg-batch').value),
+                scroll_delay_ms: parseInt(document.getElementById('cfg-scroll-delay').value) || 3000,
+                keep_browser_open: document.getElementById('cfg-keep-open').checked,
+                debug: document.getElementById('cfg-debug').checked,
+                browser_inactivity_timeout_minutes: parseInt(document.getElementById('cfg-timeout').value) || 60,
+                scan_mode: document.querySelector('input[name="scan-mode"]:checked').value,
+                scan_top_limit: parseInt(document.getElementById('cfg-scan-limit').value) || 10,
+                output_dir: "./export",
+                sidebar_width: parseInt(document.getElementById('sidebar').style.width) || null
+            };
+            await fetch(`${API_BASE}/config`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(cfg)
+            });
+            hideConfig();
+            showStatus("Config saved!");
+        }
+
+        function triggerExport() {
+            // Immediate UI feedback to prevent double-click
+            const importBtn = document.getElementById('import-btn');
+            const container = document.getElementById('progress-container');
+            const label = document.getElementById('progress-label');
+            const text = document.getElementById('progress-text');
+            const msg = document.getElementById('progress-msg');
+
+            if (container) {
+                container.style.display = 'flex';
+                container.classList.remove('archive');
+                label.textContent = "Importing";
+                text.textContent = "...";
+                msg.textContent = "Starting environment...";
+            }
+
+            if (importBtn) {
+                importBtn.style.visibility = 'hidden';
+                importBtn.style.pointerEvents = 'none';
+            }
+
+            fetch(`${API_BASE}/export`, { method: 'POST' });
+
+            // Poll sooner for the real status
+            setTimeout(pollStatus, 500);
+        }
+
+        async function triggerReindex() {
+            if (!confirm("Re-indexing will update all thread previews (Titles & Snippets) across your entire library. Proceed?")) return;
+
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = "🧠 Re-indexing...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${API_BASE}/reindex`);
+                const data = await res.json();
+                alert("Re-indexing started in background. The list will refresh automatically when ready.");
+                // Start polling until complete
+                const checkStatus = setInterval(async () => {
+                    const statusRes = await fetch(`${API_BASE}/status`);
+                    const status = await statusRes.json();
+                    if (!status.active) {
+                        clearInterval(checkStatus);
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                        init(); // Refresh list
+                    }
+                }, 3000);
+            } catch (e) {
+                alert("Failed to start re-indexing");
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function showGuide() {
+            document.querySelectorAll('.result-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('welcome-msg').style.display = 'none';
+            document.getElementById('view-area').style.display = 'flex';
+            document.getElementById('action-btns').style.display = 'none';
+
+            document.getElementById('current-title').textContent = "User Guide & Instructions";
+
+            const contentArea = document.getElementById('viewer-content');
+            contentArea.innerHTML = '<div style="color: var(--text-muted)">Loading guide...</div>';
+
+            try {
+                const response = await fetch('/guide.md');
+                const md = await response.text();
+                contentArea.innerHTML = marked.parse(md);
+
+                // Trigger syntax highlighting for guide
+                contentArea.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightElement(block);
+                });
+                contentArea.querySelectorAll('a').forEach(a => a.target = "_blank");
+            } catch (e) {
+                contentArea.textContent = "Failed to load guide.md";
+            }
+        }
+
+
+
+        function showStatus(msg) {
+            const el = document.getElementById('status-msg');
+            el.textContent = msg;
+            setTimeout(() => { el.textContent = ''; }, 5000);
+        }
+
+        function showConfig() { document.getElementById('config-overlay').style.display = 'flex'; }
+        function hideConfig() { document.getElementById('config-overlay').style.display = 'none'; }
+
+        init();
+    </script>
+</body>
+
+</html>

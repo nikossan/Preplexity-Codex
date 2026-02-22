@@ -1,0 +1,5 @@
+// Extract all conversation links
+let urls = Array.from(document.querySelectorAll('a[href*="/search/"]'))
+  .map(a => a.href)
+  .filter((v, i, a) => a.indexOf(v) === i); // remove duplicates
+console.log(JSON.stringify(urls, null, 2));
