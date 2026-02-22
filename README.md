@@ -42,6 +42,15 @@ The setup will launch a web page with the full interface and the following guide
 7. **🧠 Re-index Library**. When your work inside perplexity on old conversations and download them, you need to re-index for the search to work well.
 8. Once you are done, close the server by going to the terminal where you started it and press **Ctrl+C** 2 times. This will also close this page.
 
+## *Security and privacy concerns?*
+
+All what goes on is contained in your computer. A local web server is created, a auto-browsing engine is evoked, scripts are run to extract **your** data from the Perplexity server. Technically, you can do that by hand. Perplex-Codex just saves you the time and effort. 
+
+If you want you can go to the **github repository from where you hopefully downloaded** the tool https://github.com/nikssen/Perplexity-Codex/ and check the source code. I personally, find this too much of an effort.  
+
+So just load the .ts files from the src/ folder to an an AI and prompt it "Check this code for malicious activity. Does it send data anywhere? Does it use my data outside my computer? Does it expose anything of private and secure nature to the outside world?" You can do that for free in many AI chatbots.  
+
+
 
 ## Support and discussions 
 
