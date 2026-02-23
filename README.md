@@ -50,7 +50,22 @@ If you want you can go to the **github repository from where you hopefully downl
 
 So just load the .ts files from the src/ folder to an an AI and prompt it "Check this code for malicious activity. Does it send data anywhere? Does it use my data outside my computer? Does it expose anything of private and secure nature to the outside world?" You can do that for free in many AI chatbots.  
 
+## Screenshots
 
+Native Perplexity.ai view
+![Native Perplexity.ai view](./native-perplexity-view.png)
+
+Import in progress
+![Import in progress](./import-progress.png)
+
+Perplex-Codex main view
+![Perplex-Codex main view](./perplex-codex-main-view.png)
+
+Search function
+![Search function](./search.png)
+
+Display of code and links
+![Display of code and links](./code-and-links.png)
 
 ## Support and discussions 
 
