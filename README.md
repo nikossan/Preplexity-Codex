@@ -61,6 +61,9 @@ Import in progress
 Perplex-Codex main view
 ![Perplex-Codex main view](./perplex-codex-main-view1.png)
 
+Imported AI-enerated files, stored localy
+![Imported AI-enerated files](./generated-files-local.png)
+
 Search function
 ![Search function](./search1.png)
 
