@@ -53,19 +53,19 @@ So just load the .ts files from the src/ folder to an an AI and prompt it "Check
 ## Screenshots
 
 Native Perplexity.ai view
-![Native Perplexity.ai view](./native-perplexity-view.png)
+![Native Perplexity.ai view](./native-perplexity-view1.png)
 
 Import in progress
-![Import in progress](./import-progress.png)
+![Import in progress](./import-progress1.png)
 
 Perplex-Codex main view
-![Perplex-Codex main view](./perplex-codex-main-view.png)
+![Perplex-Codex main view](./perplex-codex-main-view1.png)
 
 Search function
-![Search function](./search.png)
+![Search function](./search1.png)
 
 Display of code and links
-![Display of code and links](./code-and-links.png)
+![Display of code and links](./code-and-links1.png)
 
 ## Support and discussions 
 
