@@ -58,10 +58,10 @@ Native Perplexity.ai view
 Import in progress
 ![Import in progress](./import-progress1.png)
 
-Perplex-Codex main view
+Perplex Codex main view
 ![Perplex-Codex main view](./perplex-codex-main-view1.png)
 
-Imported AI-enerated files, stored localy
+Imported AI-generated files, stored locally
 ![Imported AI-enerated files](./generated-files-local.png)
 
 Search function
